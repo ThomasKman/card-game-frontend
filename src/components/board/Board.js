@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import io from 'socket.io-client';
 
 // location of server
@@ -8,40 +10,36 @@ const ENDPOINT = 'localhost:5001';
 let socket;
 
 const Board = () => {
-  const [isConnected, setIsConnected] = useState(false);
+  const [name, setName] = useState('');
+  const [room, setRoom] = useState('');
+  const location = useLocation();
 
   useEffect(() => {
-    if (!isConnected) {
-      // connect to socket
-      socket = io.connect(ENDPOINT, { transports: ['websocket'] });
-      console.log('connected');
-      setIsConnected(true);
-    }
+    const { name, room } = queryString.parse(location.search);
+
+    // connect to socket
+    socket = io.connect(ENDPOINT, { transports: ['websocket'] });
+    console.log('connected');
+    setName(name);
+    setRoom(room);
+
+    socket.emit('join', { name, room }, (error) => {
+      if (error) {
+        alert(error);
+      }
+    });
+
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('chat message');
+      socket.emit('disconnect', { name, room });
+      socket.off();
     };
   }, []);
 
-  const sendMessage = (e) => {
-    e.preventDefault();
-    socket.emit('chat message', 'ping');
-  };
-
   return (
     <div>
-      <ul id="messages"></ul>
-      <form id="form" action="">
-        <input id="input" autocomplete="off" />
-        <button
-          onClick={(e) => {
-            sendMessage(e);
-          }}
-        >
-          Send
-        </button>
-      </form>
+      <h1>Hallo</h1>
+      <p>{room}</p>
+      <p>{name}</p>
     </div>
   );
 };
