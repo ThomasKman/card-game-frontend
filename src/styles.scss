@@ -3,6 +3,7 @@ body {
   font-family: 'Roboto', sans-serif;
   padding: 0;
   margin: 0;
+  background-color: #1a1a1d;
 }
 
 #root {
@@ -17,19 +18,29 @@ body {
   display: flex;
   justify-content: center;
   text-align: center;
-  height: 100vh;
+  height: 80vh;
   align-items: center;
   background-color: #1a1a1d;
 }
 
 .joinInnerContainer {
-  width: 20%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  .optionContainer {
+    margin: 40px;
+  }
 }
 
 .joinInput {
   border-radius: 0;
   padding: 15px 20px;
   width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
 }
 
 .heading {

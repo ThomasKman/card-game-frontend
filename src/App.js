@@ -12,8 +12,8 @@ function App() {
       <BrowserRouter>
         <main>
           <Routes>
-            <Route exact path="/" element={<Join />} />
-            <Route exact path="/board" element={<Board />} />
+            <Route exact path="/" element={<Join />} key="join" />
+            <Route exact path="/board" element={<Board />} key="board" />
           </Routes>
         </main>
       </BrowserRouter>
