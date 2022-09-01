@@ -17,15 +17,26 @@ const Join = () => {
   useEffect(() => {
     // connect to socket
     socket = io.connect(ENDPOINT, { transports: ['websocket'] });
-    console.log('connected');
 
-    socket.emit('join-lobby', {});
+    socket.emit('joinLobby', {});
+
+    socket.on('updateRooms', (roomList) => {
+      console.log(roomList);
+      setRooms(roomList);
+    });
+
+    console.log(rooms);
 
     return () => {
       socket.emit('disconnect', {});
       socket.off();
     };
   }, []);
+
+  const createRoom = (event) => {
+    console.log('room created: ' + name);
+    socket.emit('createRoom', room);
+  };
 
   return (
     <>
@@ -45,35 +56,21 @@ const Join = () => {
             />
           </div>
           <div className="optionContainer">
-            <h2 className="heading">Create Room</h2>
-            <div>
-              <input
-                placeholder="Room-Name"
-                className="joinInput mt-20"
-                type="text"
-                onChange={(event) => setRoom(event.target.value)}
-              />
-              <Link
-                onClick={(event) =>
-                  !name || !room ? event.preventDefault() : null
-                }
-                to={'/board/?name=' + name + '&room=' + room}
-              >
-                <button className="button mt-20" type="submit">
-                  Create Room
-                </button>
-              </Link>
-            </div>
-          </div>
-          <div className="optionContainer">
             <h2 className="heading">Join Room</h2>
 
-            <select className="joinInput mt-20" id="rooms">
+            <select
+              className="joinInput mt-20"
+              id="rooms"
+              onChange={(event) => setRoom(event.target.value)}
+            >
               {rooms.length === 0 && (
                 <option value="none">kein Spiel verfügbar</option>
               )}
               {rooms.map((room) => (
-                <option value={room.name}>{room.gamemode}</option>
+                <option value={room.name}>
+                  {room.name} - {room.gamemode} - {room.users.length}/
+                  {room.seatCount}
+                </option>
               ))}
             </select>
             <a
@@ -86,6 +83,27 @@ const Join = () => {
                 Join Room
               </button>
             </a>
+          </div>
+          <div className="optionContainer">
+            <h2 className="heading">Create Room</h2>
+            <div>
+              <input
+                placeholder="Room-Name"
+                className="joinInput mt-20"
+                type="text"
+                onChange={(event) => setRoom(event.target.value)}
+              />
+              <a
+                onClick={(event) =>
+                  !name || !room ? event.preventDefault() : createRoom(event)
+                }
+                href={'/board/?name=' + name + '&room=' + room}
+              >
+                <button className="button mt-20" type="submit">
+                  Create Room
+                </button>
+              </a>
+            </div>
           </div>
         </div>
       </div>
