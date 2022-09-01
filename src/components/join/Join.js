@@ -77,7 +77,7 @@ const Join = () => {
               onClick={(event) =>
                 !name || !room ? event.preventDefault() : null
               }
-              href={'/board/?name=' + name + '&room=' + room}
+              href={'/board/?userName=' + name + '&roomName=' + room}
             >
               <button className="button mt-20" type="submit">
                 Join Room
@@ -97,7 +97,7 @@ const Join = () => {
                 onClick={(event) =>
                   !name || !room ? event.preventDefault() : createRoom(event)
                 }
-                href={'/board/?name=' + name + '&room=' + room}
+                href={'/board/?userName=' + name + '&roomName=' + room}
               >
                 <button className="button mt-20" type="submit">
                   Create Room

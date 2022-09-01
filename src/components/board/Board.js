@@ -10,36 +10,53 @@ const ENDPOINT = 'localhost:5001';
 let socket;
 
 const Board = () => {
-  const [name, setName] = useState('');
-  const [room, setRoom] = useState('');
+  const [userName, setUserName] = useState('');
+  const [roomName, setRoomName] = useState('');
+  const [roomInfo, setRoomInfo] = useState({
+    gamemode: '',
+    name: '',
+    seatCount: '',
+    users: [],
+  });
   const location = useLocation();
 
   useEffect(() => {
-    const { name, room } = queryString.parse(location.search);
+    const { userName, roomName } = queryString.parse(location.search);
 
     // connect to socket
     socket = io.connect(ENDPOINT, { transports: ['websocket'] });
     console.log('connected');
-    setName(name);
-    setRoom(room);
+    setUserName(userName);
+    setRoomName(roomName);
 
-    socket.emit('join', { name, room }, (error) => {
+    socket.emit('join', { userName, roomName }, (error) => {
       if (error) {
         alert(error);
       }
     });
 
+    socket.on('updateRoom', (roomInfo) => {
+      setRoomInfo(roomInfo);
+    });
+
     return () => {
-      socket.emit('disconnect', { name, room });
+      socket.emit('disconnect', { userName, roomName });
       socket.off();
     };
   }, []);
 
   return (
-    <div>
+    <div className="board">
       <h1>Hallo</h1>
-      <p>{room}</p>
-      <p>{name}</p>
+      <p>{userName}</p>
+      <p>{roomName}</p>
+      <p>{roomInfo.gamemode}</p>
+      <p>
+        {roomInfo?.users.length}/{roomInfo.seatCount}
+      </p>
+      {roomInfo?.users?.map((user) => {
+        return <p>{user.name}</p>;
+      })}
     </div>
   );
 };
