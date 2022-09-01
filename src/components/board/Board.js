@@ -29,7 +29,7 @@ const Board = () => {
     setUserName(userName);
     setRoomName(roomName);
 
-    socket.emit('join', { userName, roomName }, (error) => {
+    socket.emit('joinRoom', { userName, roomName }, (error) => {
       if (error) {
         alert(error);
       }
@@ -37,6 +37,7 @@ const Board = () => {
 
     socket.on('updateRoom', (roomInfo) => {
       setRoomInfo(roomInfo);
+      console.log(roomInfo);
     });
 
     return () => {
