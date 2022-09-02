@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 
 import io from 'socket.io-client';
 
@@ -12,20 +11,11 @@ let socket;
 const Join = () => {
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState(undefined);
 
   useEffect(() => {
     // connect to socket
     socket = io.connect(ENDPOINT, { transports: ['websocket'] });
-
-    socket.emit('joinLobby', {});
-
-    socket.on('updateRooms', (roomList) => {
-      console.log(roomList);
-      setRooms(roomList);
-    });
-
-    console.log(rooms);
 
     return () => {
       socket.emit('disconnect', {});
@@ -33,9 +23,39 @@ const Join = () => {
     };
   }, []);
 
+  useEffect(() => {
+    let roomList = [];
+    socket.on('updateRooms', (rooms) => {
+      console.log('first');
+      roomList = rooms;
+      setRooms(roomList);
+      console.log(rooms);
+    });
+
+    socket.on('test', (message) => {
+      console.log(message);
+    });
+
+    socket.on('updateRoom', (room) => {
+      roomList = replaceRoom(roomList, room);
+      console.log('here');
+      console.log(roomList);
+      setRooms(roomList);
+      console.log(rooms);
+    });
+  }, [rooms]);
+
   const createRoom = (event) => {
     console.log('room created: ' + name);
     socket.emit('createRoom', room);
+  };
+
+  const replaceRoom = (rooms, room) => {
+    var index = rooms.findIndex((r) => r.name === room.name);
+    if (index !== -1) {
+      rooms[index] = room;
+    }
+    return rooms;
   };
 
   return (
@@ -63,10 +83,10 @@ const Join = () => {
               id="rooms"
               onChange={(event) => setRoom(event.target.value)}
             >
-              {rooms.length === 0 && (
+              {rooms?.length === 0 && (
                 <option value="none">kein Spiel verfügbar</option>
               )}
-              {rooms.map((room) => (
+              {rooms?.map((room) => (
                 <option value={room.name}>
                   {room.name} - {room.gamemode} - {room.users.length}/
                   {room.seatCount}

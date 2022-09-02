@@ -33,6 +33,8 @@ const Board = () => {
       if (error) {
         alert(error);
       }
+
+      socket.emit('updateRooms');
     });
 
     socket.on('updateRoom', (roomInfo) => {
@@ -41,7 +43,8 @@ const Board = () => {
     });
 
     return () => {
-      socket.emit('disconnect', { userName, roomName });
+      socket.emit('leaveRoom', { userName, roomName });
+      socket.emit('disconnect', {});
       socket.off();
     };
   }, []);
