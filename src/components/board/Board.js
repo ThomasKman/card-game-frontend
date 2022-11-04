@@ -34,12 +34,14 @@ const Board = () => {
         alert(error);
       }
 
-      socket.emit('updateRooms');
+      // socket.emit('updateRooms');
     });
 
     socket.on('updateRoom', (roomInfo) => {
-      setRoomInfo(roomInfo);
-      console.log(roomInfo);
+      if (roomInfo.name === roomName) {
+        setRoomInfo(roomInfo);
+        console.log(roomInfo);
+      }
     });
 
     return () => {

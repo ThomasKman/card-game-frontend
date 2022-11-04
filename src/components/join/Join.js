@@ -25,23 +25,24 @@ const Join = () => {
 
   useEffect(() => {
     let roomList = [];
+    roomList = rooms;
     socket.on('updateRooms', (rooms) => {
-      console.log('first');
       roomList = rooms;
       setRooms(roomList);
-      console.log(rooms);
+      console.log('update');
+      console.log(1);
     });
 
+    socket.emit('test', 'someStuff');
     socket.on('test', (message) => {
       console.log(message);
     });
 
     socket.on('updateRoom', (room) => {
       roomList = replaceRoom(roomList, room);
-      console.log('here');
-      console.log(roomList);
       setRooms(roomList);
-      console.log(rooms);
+      console.log('updateRoom');
+      console.log(12);
     });
   }, [rooms]);
 
@@ -86,8 +87,8 @@ const Join = () => {
               {rooms?.length === 0 && (
                 <option value="none">kein Spiel verfügbar</option>
               )}
-              {rooms?.map((room) => (
-                <option value={room.name}>
+              {rooms?.map((room, index) => (
+                <option key={index.toString()} value={room.name}>
                   {room.name} - {room.gamemode} - {room.users.length}/
                   {room.seatCount}
                 </option>
