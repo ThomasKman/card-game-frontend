@@ -16,6 +16,7 @@ const Join = () => {
   useEffect(() => {
     // connect to socket
     socket = io.connect(ENDPOINT, { transports: ['websocket'] });
+    socket.emit('joinLobby');
 
     return () => {
       socket.emit('disconnect', {});
@@ -29,8 +30,9 @@ const Join = () => {
     socket.on('updateRooms', (rooms) => {
       roomList = rooms;
       setRooms(roomList);
-      console.log('update');
-      console.log(1);
+      if (roomList.length > 0 && room === '') {
+        setRoom(roomList[0].name);
+      }
     });
 
     socket.emit('test', 'someStuff');
@@ -41,14 +43,11 @@ const Join = () => {
     socket.on('updateRoom', (room) => {
       roomList = replaceRoom(roomList, room);
       setRooms(roomList);
-      console.log('updateRoom');
-      console.log(12);
     });
   }, [rooms]);
 
   const createRoom = (event) => {
-    console.log('room created: ' + name);
-    socket.emit('createRoom', room);
+    socket.emit('createRoom', { name: room, gamemode: 'pp' }); // FIX THIS: gamemode static for now
   };
 
   const replaceRoom = (rooms, room) => {
@@ -82,7 +81,9 @@ const Join = () => {
             <select
               className="joinInput mt-20"
               id="rooms"
-              onChange={(event) => setRoom(event.target.value)}
+              onChange={(event) => {
+                setRoom(event.target.value);
+              }}
             >
               {rooms?.length === 0 && (
                 <option value="none">kein Spiel verfügbar</option>
