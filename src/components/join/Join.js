@@ -19,7 +19,7 @@ const Join = () => {
     socket.emit('joinLobby');
 
     return () => {
-      socket.emit('disconnect', {});
+      socket.emit('unconnect', {});
       socket.off();
     };
   }, []);
@@ -47,7 +47,7 @@ const Join = () => {
   }, [rooms]);
 
   const createRoom = (event) => {
-    socket.emit('createRoom', { name: room, gamemode: 'pp' }); // FIX THIS: gamemode static for now
+    socket.emit('createRoom', { name: room, gamemode: 'Generic Gamemode' }); //TODO FIX: gamemode static for now
   };
 
   const replaceRoom = (rooms, room) => {
